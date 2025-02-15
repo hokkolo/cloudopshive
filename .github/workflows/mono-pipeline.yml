@@ -17,19 +17,19 @@ jobs:
           cd project
           npm install
           npm run build
-      - name: Test
-        run: |
-          pwd
-          ls -la project/
-      # - name: Copy build directory to runner
+      # - name: Test
       #   run: |
-      #     mkdir -p /tmp/build
-      #     cp -r .project/dist /tmp/build/
-      # - name: Upload build artifacts (optional)
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: build-artifact
-      #     path: /tmp/build
+      #     pwd
+      #     ls -la project/
+      - name: Copy build directory to temp dir
+        run: |
+          mkdir -p /tmp/build
+          cp -r project/dist /tmp/build/
+      - name: Upload build artifacts 
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifact
+          path: /tmp/build
 
         
       
