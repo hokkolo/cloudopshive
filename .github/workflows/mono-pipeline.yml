@@ -1,0 +1,25 @@
+name: Run Bash Script on Self-Hosted Runner
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  run-script:
+    runs-on: cloudopshive-vm # Runs on a self-hosted runner
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Delete Document Root Nginx
+        run: |
+          rm -rf /var/www/html/*
+      - name: Copy Webfiles to DocRoot
+        uses: MadaraUchiha/copy-action@0.0.1
+        with:
+          source: ./project/
+          target: /var/www/html
+        
+      
