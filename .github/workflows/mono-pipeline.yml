@@ -19,6 +19,10 @@ jobs:
       - name: Copy Webfiles to DocRoot
         run: |
           sudo cp -R project/* /var/www/html
-        
+      - name: NPM build
+        run: |
+          cd /var/www/html/;
+          npm install;
+          npm run build
         
       
