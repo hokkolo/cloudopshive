@@ -19,9 +19,7 @@ jobs:
       - name: Copy Webfiles to DocRoot
         uses: MadaraUchiha/copy-action@0.0.1
         with:
-          # Source file
           source: ./project/
-          # Target file
           target: /var/www/html
         
       
