@@ -17,9 +17,8 @@ jobs:
         run: |
           rm -rf /var/www/html/*
       - name: Copy Webfiles to DocRoot
-        uses: MadaraUchiha/copy-action@0.0.1
-        with:
-          source: project/
-          target: /var/www/html
+        run: |
+          cp -R project/* /var/www/html
+        
         
       
