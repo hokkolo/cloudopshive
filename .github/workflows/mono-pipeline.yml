@@ -1,28 +1,31 @@
-name: Run Bash Script on Self-Hosted Runner
-
+name: Build and Copy
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:  # Allows manual trigger
-
+    branches: master
 jobs:
-  run-script:
-    runs-on: self-hosted # Runs on a self-hosted runner
+  build:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Delete Document Root Nginx
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22  # Or your preferred Node.js version
+      - name: Install dependencies
         run: |
-          sudo rm -rf /var/www/html/*
-      - name: Copy Webfiles to DocRoot
-        run: |
-          sudo cp -R project/* /var/www/html
-      - name: NPM build
-        run: |
-          cd /var/www/html/;
-          npm install;
+          cd project
+          npm install
           npm run build
+      - name: Copy build directory to runner
+        run: |
+          mkdir -p /tmp/build
+          cp -r ./dist /tmp/build/
+      - name: Upload build artifacts (optional)
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifact
+          path: /tmp/build
+
         
       
