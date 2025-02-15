@@ -15,10 +15,10 @@ jobs:
 
       - name: Delete Document Root Nginx
         run: |
-          rm -rf /var/www/html/*
+          sudo rm -rf /var/www/html/*
       - name: Copy Webfiles to DocRoot
         run: |
-          cp -R project/* /var/www/html
+          sudo cp -R project/* /var/www/html
         
         
       
