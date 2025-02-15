@@ -22,7 +22,7 @@ jobs:
           mkdir -p /tmp/build
           cp -r ./dist /tmp/build/
       - name: Upload build artifacts (optional)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-artifact
           path: /tmp/build
