@@ -20,7 +20,7 @@ jobs:
       - name: Test
         run: |
           pwd
-          ls -la
+          ls -la project/
       # - name: Copy build directory to runner
       #   run: |
       #     mkdir -p /tmp/build
