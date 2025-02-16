@@ -295,14 +295,14 @@ function App() {
               <Phone className="w-6 h-6 text-amber-500" />
               <div>
                 <h4 className="text-gray-800 font-semibold">Phone</h4>
-                <p className="text-gray-600">+91 9123548371</p>
+                <p className="text-gray-600">+1 (555) 123-4567</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
               <MapPin className="w-6 h-6 text-amber-500" />
               <div>
                 <h4 className="text-gray-800 font-semibold">Location</h4>
-                <p className="text-gray-600">Sector 7, HSR,Bangalore 560068</p>
+                <p className="text-gray-600">123 Tech Street, Silicon Valley, CA 94025</p>
               </div>
             </div>
           </div>
