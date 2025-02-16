@@ -21,7 +21,7 @@ jobs:
       # - name: List Artifact
       #   run: ls -la artifact
       - name: Docroot Cleanup
-        run: rm -rf /var/www/html/*
+        run: sudo rm -rf /var/www/html/*
       - name: Copy Artifact files
         run: sudo cp -a artifact/dist/. /var/www/html/
           
