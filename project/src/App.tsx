@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Cloud, Server, Code, Shield, Check, Mail, Phone, MapPin, X } from 'lucide-react';
-import { query } from './lib/db';
 
 function App() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -40,13 +39,7 @@ function App() {
 
     try {
       // Save to database
-      await query(
-        'INSERT INTO inquiries (name, email, company, selected_plan, requirements) VALUES (?, ?, ?, ?, ?)',
-        [formData.name, formData.email, formData.company, selectedPlan, formData.requirements]
-      );
-
-      // Send email
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-email`, {
+      const dbResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/handle-inquiry`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -58,7 +51,24 @@ function App() {
         }),
       });
 
-      if (!response.ok) {
+      if (!dbResponse.ok) {
+        throw new Error('Failed to save inquiry');
+      }
+
+      // Send email
+      const emailResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          ...formData,
+          selectedPlan,
+        }),
+      });
+
+      if (!emailResponse.ok) {
         throw new Error('Failed to send email');
       }
 
