@@ -1,8 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Cloud, Server, Code, Shield, Check, Mail, Phone, MapPin } from 'lucide-react';
+import { Cloud, Server, Code, Shield, Check, Mail, Phone, MapPin, X } from 'lucide-react';
+import { query } from './lib/db';
 
 function App() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    company: '',
+    requirements: ''
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,6 +26,50 @@ function App() {
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handlePlanSelect = (planName: string) => {
+    setSelectedPlan(planName);
+    setShowModal(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      // Save to database
+      await query(
+        'INSERT INTO inquiries (name, email, company, selected_plan, requirements) VALUES (?, ?, ?, ?, ?)',
+        [formData.name, formData.email, formData.company, selectedPlan, formData.requirements]
+      );
+
+      // Send email
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          ...formData,
+          selectedPlan,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send email');
+      }
+
+      alert('Thank you for your interest! We will contact you soon.');
+      setShowModal(false);
+      setFormData({ name: '', email: '', company: '', requirements: '' });
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Sorry, there was an error sending your request. Please try again later.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -54,53 +108,51 @@ function App() {
   const pricingPlans = [
     {
       name: 'Starter Hive',
-      price: '$299',
-      period: '/month',
+      price: 'Starting $10',
+      period: '/task',
       features: [
-        'Basic Cloud Infrastructure Setup',
+        'One time tasks',
         'Single Environment Pipeline',
-        '8/5 Support',
-        'Basic Monitoring',
-        'Weekly Backups'
+        'One time Troubleshooting Linux Servers',
+        'Deploy app to Cloud'
       ],
       highlighted: false
     },
     {
       name: 'Growth Hive',
-      price: '$599',
-      period: '/month',
+      price: 'Starting $50',
+      period: '/project',
       features: [
-        'Advanced Cloud Architecture',
-        'Multi-Environment Pipelines',
-        '16/5 Support',
-        'Advanced Monitoring',
-        'Daily Backups'
+        'Project Management Onboarding',
+        'Design Project Architecture',
+        'Setup Branching policies',
+        'One CI-CD Pipeline',
+        'Self-hosted Agent Setup'
       ],
       highlighted: false
     },
     {
       name: 'Enterprise Hive',
-      price: '$999',
-      period: '/month',
+      price: 'Starting $150',
+      period: '/project',
       features: [
-        'Enterprise Cloud Solutions',
-        'Custom CI/CD Workflows',
-        '24/7 Premium Support',
-        'Custom Monitoring Solutions',
-        'Real-time Backups'
+        'Project Management Onboarding',
+        'Cloud Artichecture design',
+        'Cloud Deployment',
+        'DevOps Architecture',
+        'Infra Automation'
       ],
       highlighted: true
     },
     {
       name: 'Scale Hive',
-      price: '$1,499',
-      period: '/month',
+      price: 'Starting $100',
+      period: '/project',
       features: [
-        'Multi-Cloud Architecture',
-        'Advanced Security Measures',
-        '24/7 Dedicated Support',
-        'AI-Powered Monitoring',
-        'Disaster Recovery'
+        'Cloud Infrastructure Security Analysis',
+        'Cloud Resource Optimization',
+        'Cloud Cost Optimization Suggestions',
+        'Auto Scaling deployment'
       ],
       highlighted: false
     },
@@ -109,11 +161,11 @@ function App() {
       price: 'Custom',
       period: '',
       features: [
-        'Tailored Cloud Solutions',
-        'Custom Infrastructure Design',
-        'Dedicated Team',
-        'Custom SLA',
-        'Bespoke Security'
+        'Kubernetes solution on AWS/Azure',
+        'Argo CD for Kubernetes',
+        'Cast AI for Kubernetes',
+        'Monitoring Solution for Kubernetes and Instances',
+        'Application Containerizing'
       ],
       highlighted: false
     }
@@ -265,6 +317,7 @@ function App() {
                   ))}
                 </ul>
                 <button
+                  onClick={() => handlePlanSelect(plan.name)}
                   className={`w-full py-2 px-4 rounded-lg font-semibold transition-colors ${
                     plan.highlighted
                       ? 'bg-white text-amber-500 hover:bg-gray-50'
@@ -345,6 +398,74 @@ function App() {
           <p>© 2024 CloudOps Hive. All rights reserved.</p>
         </div>
       </footer>
+
+      {/* Plan Selection Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-2xl font-bold text-gray-800">Get Started with {selectedPlan}</h3>
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <input
+                  type="text"
+                  placeholder="Your Name"
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  className="w-full px-4 py-2 border-2 border-amber-100 rounded-lg focus:outline-none focus:border-amber-400"
+                />
+              </div>
+              <div>
+                <input
+                  type="email"
+                  placeholder="Your Email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  className="w-full px-4 py-2 border-2 border-amber-100 rounded-lg focus:outline-none focus:border-amber-400"
+                />
+              </div>
+              <div>
+                <input
+                  type="text"
+                  placeholder="Company Name"
+                  required
+                  value={formData.company}
+                  onChange={(e) => setFormData({...formData, company: e.target.value})}
+                  className="w-full px-4 py-2 border-2 border-amber-100 rounded-lg focus:outline-none focus:border-amber-400"
+                />
+              </div>
+              <div>
+                <textarea
+                  placeholder="Project Requirements"
+                  required
+                  value={formData.requirements}
+                  onChange={(e) => setFormData({...formData, requirements: e.target.value})}
+                  rows={4}
+                  className="w-full px-4 py-2 border-2 border-amber-100 rounded-lg focus:outline-none focus:border-amber-400 resize-none"
+                ></textarea>
+              </div>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className={`w-full bg-amber-400 text-white py-2 px-4 rounded-lg font-semibold transition-colors ${
+                  isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-amber-500'
+                }`}
+              >
+                {isSubmitting ? 'Sending...' : 'Submit'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
