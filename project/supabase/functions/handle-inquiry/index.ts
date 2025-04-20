@@ -8,10 +8,10 @@ const corsHeaders = {
 };
 
 const pool = mysql.createPool({
-  host: 'cloudsopshive.mysql.database.azure.com',
-  user: 'cloudops',
-  password: 'CLOUDops@94',
-  database: 'cloudopshive',
+  host: Deno.env.get('MYSQL_HOST'),
+  user: Deno.env.get('MYSQL_USER'),
+  password: Deno.env.get('MYSQL_PASSWORD'),
+  database: Deno.env.get('MYSQL_DATABASE'),
   ssl: {
     rejectUnauthorized: true
   }
