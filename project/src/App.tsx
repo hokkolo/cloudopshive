@@ -39,36 +39,45 @@ function App() {
 
     try {
       // Save to database
-      const dbResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/handle-inquiry`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-        },
-        body: JSON.stringify({
-          ...formData,
-          selectedPlan,
-        }),
-      });
+      // const dbResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/handle-inquiry`, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+      //   },
+      //   body: JSON.stringify({
+      //     ...formData,
+      //     selectedPlan,
+      //   }),
+      // });
 
-      if (!dbResponse.ok) {
-        throw new Error('Failed to save inquiry');
-      }
+      // if (!dbResponse.ok) {
+      //   throw new Error('Failed to save inquiry');
+      // }
 
       // Send email
-      const emailResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-email`, {
+      const emailResponse = await fetch(`https://cloudopshive.azurewebsites.net/email`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          ...formData,
-          selectedPlan,
+          r_email: formData.email,
+          e_subject: "CloudOps Hive",
+          e_plan: selectedPlan,
+          e_req: formData.requirements,
+          e_name: formData.name
+          //e_body: "`Name: $name\nEmail: ${email}\nCompany: ${company}\nSelected Plan: ${selectedPlan}\nRequirements: ${requirements}\n\nThis inquiry was automatically generated from the CloudOps Hive website.`"
         }),
       });
 
       if (!emailResponse.ok) {
+        const errorText = await emailResponse.text();
+        console.error('Email sending failed:', {
+          status: emailResponse.status,
+          statusText: emailResponse.statusText,
+          error: errorText
+        });
         throw new Error('Failed to send email');
       }
 
