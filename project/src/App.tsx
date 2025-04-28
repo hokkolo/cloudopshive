@@ -94,51 +94,37 @@ function App() {
     setIsSubmitting(true);
 
     try {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      // Save to database
+      // const dbResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/handle-inquiry`, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+      //   },
+      //   body: JSON.stringify({
+      //     ...formData,
+      //     selectedPlan,
+      //   }),
+      // });
 
-      if (!supabaseUrl || !supabaseKey) {
-        throw new Error('Missing Supabase configuration');
-      }
+      // if (!dbResponse.ok) {
+      //   throw new Error('Failed to save inquiry');
+      // }
 
-      const inquiryResponse = await fetch(`${supabaseUrl}/functions/v1/handle-inquiry`, {
+      // Send email
+      const emailResponse = await fetch(`https://cloudopshive.azurewebsites.net/email`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabaseKey}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          company: formData.company,
-          selectedPlan,
-          requirements: formData.requirements
-        })
-      });
-
-      if (!inquiryResponse.ok) {
-        const errorText = await inquiryResponse.text();
-        console.error('Inquiry submission failed:', {
-          status: inquiryResponse.status,
-          statusText: inquiryResponse.statusText,
-          error: errorText
-        });
-        throw new Error(`Failed to submit inquiry: ${inquiryResponse.status} ${errorText || inquiryResponse.statusText}`);
-      }
-
-      const emailResponse = await fetch(`${supabaseUrl}/functions/v1/send-email`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabaseKey}`
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          company: formData.company,
-          selectedPlan,
-          requirements: formData.requirements
-        })
+          r_email: formData.email,
+          e_subject: "CloudOps Hive",
+          e_plan: selectedPlan,
+          e_req: formData.requirements,
+          e_name: formData.name
+          //e_body: "`Name: $name\nEmail: ${email}\nCompany: ${company}\nSelected Plan: ${selectedPlan}\nRequirements: ${requirements}\n\nThis inquiry was automatically generated from the CloudOps Hive website.`"
+        }),
       });
 
       if (!emailResponse.ok) {
@@ -148,7 +134,8 @@ function App() {
           statusText: emailResponse.statusText,
           error: errorText
         });
-        throw new Error(`Failed to send email notification: ${emailResponse.status} ${errorText || emailResponse.statusText}`);
+        throw new Error('Failed to send email');
+
       }
 
       alert('Thank you for your interest! We will contact you soon.');
