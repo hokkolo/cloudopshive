@@ -34,6 +34,12 @@ function App() {
     }
   };
 
+  const showNotificationMessage = (message: string) => {
+    setNotificationMessage(message);
+    setShowNotification(true);
+    setTimeout(() => setShowNotification(false), 3000);
+  };
+
   const handlePlanSelect = (planName: string) => {
     setSelectedPlan(planName);
     setShowModal(true);
