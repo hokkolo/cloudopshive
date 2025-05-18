@@ -12,6 +12,11 @@ function App() {
     company: '',
     requirements: ''
   });
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -91,6 +96,45 @@ function App() {
       setIsSubmitting(false);
     }
   };
+  const handleContactSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setIsSubmitting(true);
+  
+      try {
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  
+        if (!supabaseUrl || !supabaseKey) {
+          throw new Error('Missing Supabase configuration');
+        }
+  
+        const emailResponse = await fetch(`https://cloudopshive.azurewebsites.net/contact`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            c_name: contactForm.name,
+            c_email: contactForm.email,
+            c_requirements: contactForm.message,
+            type: 'contact'
+          })
+        });
+  
+        if (!emailResponse.ok) {
+          const errorText = await emailResponse.text();
+          throw new Error(`Failed to send message: ${emailResponse.status} ${errorText || emailResponse.statusText}`);
+        }
+  
+        showNotificationMessage('Thank you for your message! We will get back to you soon.');
+        setContactForm({ name: '', email: '', message: '' });
+      } catch (error) {
+        console.error('Contact submission error:', error);
+        showNotificationMessage(error instanceof Error ? error.message : 'Sorry, there was an error sending your message. Please try again later.');
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
 
   const Logo = () => (
     <div className="relative inline-flex">
@@ -378,10 +422,13 @@ function App() {
               </div>
             </div>
           </div>
-          <form className="space-y-6">
+          <form onSubmit={handleContactSubmit} className="space-y-6">
             <div>
               <input
                 type="text"
+                required
+                value={contactForm.name}
+                onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
                 placeholder="Your Name"
                 className="w-full px-4 py-2 bg-white border-2 border-amber-100 rounded-lg focus:outline-none focus:border-amber-400 text-gray-800 placeholder-gray-400"
               />
@@ -389,19 +436,28 @@ function App() {
             <div>
               <input
                 type="email"
+                required
+                value={contactForm.email}
+                onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
                 placeholder="Your Email"
                 className="w-full px-4 py-2 bg-white border-2 border-amber-100 rounded-lg focus:outline-none focus:border-amber-400 text-gray-800 placeholder-gray-400"
               />
             </div>
             <div>
               <textarea
+                required
+                value={contactForm.message}
+                onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
                 placeholder="Your Message"
                 rows={4}
                 className="w-full px-4 py-2 bg-white border-2 border-amber-100 rounded-lg focus:outline-none focus:border-amber-400 text-gray-800 placeholder-gray-400 resize-none"
               ></textarea>
             </div>
-            <button className="w-full bg-amber-400 text-white py-2 px-4 rounded-lg font-semibold hover:bg-amber-500 transition-colors">
-              Send Message
+            <button 
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-amber-400 text-white py-2 px-4 rounded-lg font-semibold hover:bg-amber-500 transition-colors">
+              {isSubmitting ? 'Sending...' : 'Send Message'}
             </button>
           </form>
         </div>
