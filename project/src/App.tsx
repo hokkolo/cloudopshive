@@ -5,6 +5,7 @@ function App() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -539,6 +540,13 @@ function App() {
               </button>
             </form>
           </div>
+        </div>
+      )}
+      {/* Success Notification */}
+      {showNotification && (
+        <div className="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center">
+          <Check className="w-5 h-5 mr-2" />
+          <span>{notificationMessage}</span>
         </div>
       )}
     </div>
