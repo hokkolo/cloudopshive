@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Cloud, Server, Code, Shield, Check, Mail, Phone, MapPin, X } from 'lucide-react';
-import { BlogCard } from './components/BlogCard';
+import { BlogSection } from './components/BlogSection';
 import { BlogModal } from './components/BlogModal';
-import { blogPosts } from './data/blogPosts';
 
 interface BlogPost {
   id: string;
@@ -22,6 +21,7 @@ function App() {
   const [showModal, setShowModal] = useState(false);
   const [selectedBlogPost, setSelectedBlogPost] = useState<BlogPost | null>(null);
   const [showBlogModal, setShowBlogModal] = useState(false);
+  const [showFullBlog, setShowFullBlog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -142,6 +142,10 @@ function App() {
             <div className="hidden md:flex space-x-6">
               <button onClick={() => scrollToSection('services')} className="text-gray-600 hover:text-amber-500">Services</button>
               <button onClick={() => scrollToSection('blog')} className="text-gray-600 hover:text-amber-500">Blog</button>
+              <button onClick={() => {
+                setShowFullBlog(true);
+                setTimeout(() => scrollToSection('blog-full'), 100);
+              }} className="text-gray-600 hover:text-amber-500">All Posts</button>
               <button onClick={() => scrollToSection('pricing')} className="text-gray-600 hover:text-amber-500">Pricing</button>
               <button onClick={() => scrollToSection('contact')} className="text-gray-600 hover:text-amber-500">Contact</button>
             </div>
@@ -201,20 +205,39 @@ function App() {
           <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
             Stay updated with the latest trends, best practices, and insights in cloud operations and DevOps
           </p>
-          <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
-            {blogPosts.slice(0, 4).map((post) => (
-              <BlogCard
-                key={post.id}
-                post={post}
-                onReadMore={(post) => {
-                  setSelectedBlogPost(post);
-                  setShowBlogModal(true);
-                }}
-              />
-            ))}
-          </div>
+          <BlogSection
+            onReadMore={(post) => {
+              setSelectedBlogPost(post);
+              setShowBlogModal(true);
+            }}
+            showAll={false}
+          />
         </div>
       </section>
+
+      {/* Full Blog Section */}
+      {showFullBlog && (
+        <section id="blog-full" className="py-20 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-3xl font-bold text-gray-900">All Blog Posts</h2>
+              <button
+                onClick={() => setShowFullBlog(false)}
+                className="text-gray-500 hover:text-gray-700 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <BlogSection
+              onReadMore={(post) => {
+                setSelectedBlogPost(post);
+                setShowBlogModal(true);
+              }}
+              showAll={true}
+            />
+          </div>
+        </section>
+      )}
 
       {/* Pricing Section */}
       <section id="pricing" className="py-20 bg-white">
