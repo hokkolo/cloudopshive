@@ -1,3 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Merriweather:wght@400;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@tailwindcss/typography;
+
+
+.blog-content {
+  font-family: 'Merriweather', serif; /* for blog body text */
+}
+
+.blog-content h1, 
+.blog-content h2, 
+.blog-content h3 {
+  font-family: 'Inter', sans-serif;  /* for headings */
+}
+
+.blog-content img {
+  border-radius: 0.5rem;   /* rounded corners */
+  margin: 1.5rem auto;    /* centered with spacing */
+  max-height: 400px;      /* optional height limit */
+  object-fit: contain;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
