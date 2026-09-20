@@ -1,5 +1,5 @@
 #stage 1
-FROM node:latest AS node
+FROM node:latest as node
 WORKDIR /app
 COPY project/ .
 RUN npm install
@@ -12,4 +12,3 @@ COPY conf/nginx.conf /etc/nginx/nginx.conf
 COPY conf/default.conf /etc/nginx/conf.d/
 COPY --from=node /app/dist/ /usr/share/nginx/html
 CMD ["nginx", "-g", "daemon off;"]
-
