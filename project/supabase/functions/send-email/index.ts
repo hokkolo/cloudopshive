@@ -31,6 +31,8 @@ Email: ${email}
 Company: ${company}
 Selected Plan: ${selectedPlan}
 Requirements: ${requirements}
+
+This inquiry was automatically generated from the CloudOps Hive website.
     `;
 
     const transporter = new SmtpClient({
@@ -45,9 +47,10 @@ Requirements: ${requirements}
 
     await transporter.sendMail({
       from: Deno.env.get("SMTP_FROM"),
-      to: "contact@cloudopshive.com",
-      subject: `New ${selectedPlan} Inquiry`,
+      to: Deno.env.get("SMTP_TO"),
+      subject: `New ${selectedPlan} Inquiry from ${company}`,
       text: emailContent,
+      replyTo: email,
     });
 
     return new Response(
@@ -60,8 +63,9 @@ Requirements: ${requirements}
       }
     );
   } catch (error) {
+    console.error('Error sending email:', error);
     return new Response(
-      JSON.stringify({ error: "Failed to send email" }),
+      JSON.stringify({ error: "Failed to send email", details: error.message }),
       {
         status: 500,
         headers: {
