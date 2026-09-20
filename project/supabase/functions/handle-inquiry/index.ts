@@ -8,10 +8,17 @@ const corsHeaders = {
 };
 
 const pool = mysql.createPool({
+<<<<<<< HEAD
   host: Deno.env.get('DB_HOST'),
   user: Deno.env.get('DB_USER'),
   password: Deno.env.get('DB_PASSWORD'),
   database: Deno.env.get('DB_NAME'),
+=======
+  host: Deno.env.get('MYSQL_HOST'),
+  user: Deno.env.get('MYSQL_USER'),
+  password: Deno.env.get('MYSQL_PASSWORD'),
+  database: Deno.env.get('MYSQL_DATABASE'),
+>>>>>>> master
   ssl: {
     rejectUnauthorized: true
   }

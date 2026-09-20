@@ -24,6 +24,7 @@ import {
   Wrench,
 } from "lucide-react";
 
+<<<<<<< HEAD
 /* -------------------------
    Small utilities
    ------------------------- */
@@ -45,6 +46,153 @@ function parseFrontMatter(text: string) {
         value = value.slice(1, -1);
       }
       data[key] = value;
+=======
+function App() {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    company: '',
+    requirements: ''
+  });
+
+  const plans = [
+    {
+      name: 'Starter Hive',
+      price: 'Starting $10/task',
+      features: [
+        'One time tasks',
+        'Single Environment Pipeline',
+        'One time Troubleshooting Linux Servers',
+        'Deploy app to Cloud'
+      ]
+    },
+    {
+      name: 'Growth Hive',
+      price: 'Starting $50/project',
+      features: [
+        'Project Management Onboarding',
+        'Design Project Architecture',
+        'Setup Branching policies',
+        'One CI-CD Pipeline',
+        'Self-hosted Agent Setup'
+      ]
+    },
+    {
+      name: 'Enterprise Hive',
+      price: 'Starting $150/Project',
+      features: [
+        'Project Management Onboarding',
+        'Cloud Artichecture design',
+        'Cloud Deployment',
+        'DevOps Architecture',
+        'Infra Automation'
+      ]
+    },
+    {
+      name: 'Scale Hive',
+      price: 'Starting $100/Project',
+      features: [
+        'Cloud Infrastructure Security Analysis',
+        'Cloud Resource Optimization',
+        'Cloud Cost Optimization Suggestions',
+        'Auto Scaling deployment'
+      ]
+    },
+    {
+      name: 'Custom Hive',
+      price: 'Contact us',
+      features: [
+        'Kubernetes solution on AWS/Azure',
+        'Argo CD for Kubernetes',
+        'Cast AI for Kubernetes',
+        'Monitoring Solution for Kubernetes and Instances',
+        'Application Containerizing'
+      ]
+    }
+  ];
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handlePlanSelect = (planName: string) => {
+    setSelectedPlan(planName);
+    setShowModal(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      // Save to database
+      // const dbResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/handle-inquiry`, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+      //   },
+      //   body: JSON.stringify({
+      //     ...formData,
+      //     selectedPlan,
+      //   }),
+      // });
+
+      // if (!dbResponse.ok) {
+      //   throw new Error('Failed to save inquiry');
+      // }
+
+      // Send email
+      const emailResponse = await fetch(`https://cloudopshive.azurewebsites.net/email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          r_email: formData.email,
+          e_subject: "CloudOps Hive",
+          e_plan: selectedPlan,
+          e_req: formData.requirements,
+          e_name: formData.name
+          //e_body: "`Name: $name\nEmail: ${email}\nCompany: ${company}\nSelected Plan: ${selectedPlan}\nRequirements: ${requirements}\n\nThis inquiry was automatically generated from the CloudOps Hive website.`"
+        }),
+      });
+
+      if (!emailResponse.ok) {
+        const errorText = await emailResponse.text();
+        console.error('Email sending failed:', {
+          status: emailResponse.status,
+          statusText: emailResponse.statusText,
+          error: errorText
+        });
+        throw new Error('Failed to send email');
+
+      }
+
+      alert('Thank you for your interest! We will contact you soon.');
+      setShowModal(false);
+      setFormData({ name: '', email: '', company: '', requirements: '' });
+    } catch (error) {
+      console.error('Submission error:', error);
+      alert(error instanceof Error ? error.message : 'Sorry, there was an error sending your request. Please try again later.');
+    } finally {
+      setIsSubmitting(false);
+>>>>>>> master
     }
   });
   return { data, content };
@@ -149,6 +297,7 @@ function HeroLogo() {
   );
 }
 
+<<<<<<< HEAD
 /* -------------------------
    BlogList component
    - tries to fetch /blogs/index.json (array of filenames)
@@ -522,10 +671,44 @@ function Home() {
               </svg>
             </button>
           </div>
+=======
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Navigation */}
+      <nav className={`fixed w-full z-50 transition-all ${isScrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'}`}>
+        <div className="container mx-auto px-4 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Logo />
+            <span className="text-xl font-bold text-gray-800">CloudOps Hive</span>
+          </div>
+          <div className="hidden md:flex space-x-6">
+            <button onClick={() => scrollToSection('services')} className="text-gray-600 hover:text-amber-500">Services</button>
+            <button onClick={() => scrollToSection('pricing')} className="text-gray-600 hover:text-amber-500">Pricing</button>
+            <button onClick={() => scrollToSection('contact')} className="text-gray-600 hover:text-amber-500">Contact</button>
+          </div>
         </div>
-      </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="pt-32 pb-20 px-4">
+        <div className="container mx-auto text-center">
+          <HeroLogo />
+          <h1 className="mt-8 text-5xl font-bold text-gray-900">Cloud Operations Excellence</h1>
+          <p className="mt-4 text-xl text-gray-600 max-w-2xl mx-auto">
+            Transform your cloud infrastructure with our expert DevOps solutions
+          </p>
+          <button
+            onClick={() => scrollToSection('contact')}
+            className="mt-8 px-8 py-3 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors"
+          >
+            Get Started
+          </button>
+>>>>>>> master
+        </div>
+      </section>
 
       {/* Services Section */}
+<<<<<<< HEAD
       <div id="services" className="container mx-auto px-4 py-24 border-t border-amber-100">
         <h2 className="text-4xl font-extrabold text-center text-gray-900 mb-4">Our Services</h2>
         <p className="text-gray-600 text-center max-w-2xl mx-auto mb-16 text-lg">
@@ -576,6 +759,51 @@ function Home() {
                 <Link
                   to="/plans"
                   className="inline-flex items-center justify-center w-full py-3 px-6 bg-amber-400 hover:bg-amber-500 text-white font-bold rounded-xl shadow-sm hover:shadow transition-all text-center"
+=======
+      <section id="services" className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Our Services</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="p-6 bg-gray-50 rounded-lg">
+              <Server className="w-12 h-12 text-amber-500 mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Infrastructure Management</h3>
+              <p className="text-gray-600">Expert cloud infrastructure setup and maintenance</p>
+            </div>
+            <div className="p-6 bg-gray-50 rounded-lg">
+              <Code className="w-12 h-12 text-amber-500 mb-4" />
+              <h3 className="text-xl font-semibold mb-2">DevOps Automation</h3>
+              <p className="text-gray-600">Streamline your development and deployment processes</p>
+            </div>
+            <div className="p-6 bg-gray-50 rounded-lg">
+              <Shield className="w-12 h-12 text-amber-500 mb-4" />
+              <h3 className="text-xl font-semibold mb-2">Security & Compliance</h3>
+              <p className="text-gray-600">Ensure your cloud infrastructure is secure and compliant</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Pricing Plans</h2>
+          <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-8">
+            {plans.map((plan) => (
+              <div key={plan.name} className="bg-white p-6 rounded-lg shadow-md">
+                <h3 className="text-xl font-semibold mb-2">{plan.name}</h3>
+                <p className="text-amber-500 font-semibold mb-4">{plan.price}</p>
+                <ul className="space-y-3 mb-6">
+                  {plan.features.map((feature, index) => (
+                    <li key={index} className="flex items-start">
+                      <Check className="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm text-gray-600">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  onClick={() => handlePlanSelect(plan.name)}
+                  className="w-full py-2 bg-amber-500 text-white rounded hover:bg-amber-600 transition-colors"
+>>>>>>> master
                 >
                   Get Started
                   <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -583,10 +811,10 @@ function Home() {
                   </svg>
                 </Link>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* Why Partner with Us Section */}
       <div className="bg-amber-50/50 border-y border-amber-100 py-24">
@@ -666,6 +894,7 @@ function Home() {
       </div>
 
       {/* Contact Section */}
+<<<<<<< HEAD
       <div id="contact" className="container mx-auto px-4 py-24 border-t border-amber-100">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">Contact Us</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -675,14 +904,22 @@ function Home() {
               <div>
                 <h4 className="text-gray-800 font-semibold">Email</h4>
                 <p className="text-gray-600">contacts@cloudopshive.com</p>
+=======
+      <section id="contact" className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Contact Us</h2>
+          <div className="max-w-2xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-8 mb-8">
+              <div className="flex items-center space-x-4">
+                <Mail className="w-6 h-6 text-amber-500" />
+                <span>contact@cloudopshive.com</span>
+>>>>>>> master
               </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Phone className="w-6 h-6 text-amber-500" />
-              <div>
-                <h4 className="text-gray-800 font-semibold">Phone</h4>
-                <p className="text-gray-600">+91 9123548371</p>
+              <div className="flex items-center space-x-4">
+                <Phone className="w-6 h-6 text-amber-500" />
+                <span>+1 (555) 123-4567</span>
               </div>
+<<<<<<< HEAD
             </div>
             <div className="flex items-center space-x-4">
               <MapPin className="w-6 h-6 text-amber-500" />
@@ -741,9 +978,18 @@ function Home() {
               </p>
             )}
           </form>
+=======
+              <div className="flex items-center space-x-4">
+                <MapPin className="w-6 h-6 text-amber-500" />
+                <span>123 Cloud Street, Tech City</span>
+              </div>
+            </div>
+          </div>
+>>>>>>> master
         </div>
-      </div>
+      </section>
 
+<<<<<<< HEAD
       {/* Footer */}
       <footer className="border-t border-amber-100 py-8">
         <div className="container mx-auto px-4 text-center text-gray-600">
@@ -1037,15 +1283,23 @@ function PlansPage() {
       </div>
 
       {/* Plan Selection Modal */}
+=======
+      {/* Inquiry Modal */}
+>>>>>>> master
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 shadow-2xl">
             <div className="flex justify-between items-center mb-6">
+<<<<<<< HEAD
               <h3 className="text-2xl font-bold text-gray-800">Get Started with {selectedPlan}</h3>
+=======
+              <h3 className="text-2xl font-bold">Request Information</h3>
+>>>>>>> master
               <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-700">
                 <X className="w-6 h-6" />
               </button>
             </div>
+<<<<<<< HEAD
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <input
@@ -1085,6 +1339,58 @@ function PlansPage() {
               >
                 {isSubmitting ? "Sending..." : "Submit"}
               </button>
+=======
+            <form onSubmit={handleSubmit}>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <input
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.company}
+                    onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Requirements</label>
+                  <textarea
+                    required
+                    value={formData.requirements}
+                    onChange={(e) => setFormData({ ...formData, requirements: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    rows={4}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full py-2 bg-amber-500 text-white rounded hover:bg-amber-600 transition-colors disabled:bg-amber-300"
+                >
+                  {isSubmitting ? 'Sending...' : 'Submit'}
+                </button>
+              </div>
+>>>>>>> master
             </form>
           </div>
         </div>
